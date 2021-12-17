@@ -17,32 +17,35 @@ import os
 from PIL import Image
 
 
+def main():
+    # %%
+    st.title('Poster Generator')
 
-# %%
-st.title('Poster Generator')
+    # %%
+    nz = 100
+    ngpu = 1
+    device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
-# %%
-nz = 100
-ngpu = 1
-device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
+    # %%
+    netG = Generator(ngpu).to(device)
+    netG_params = torch.load("model1.pth")
+    netG.load_state_dict(netG_params)
 
-# %%
-netG = Generator(ngpu).to(device)
-netG_params = torch.load("model1.pth")
-netG.load_state_dict(netG_params)
 
+
+    # %%
+    if st.button('Click to generate poster'):
+        st.write('Generating poster....')
+        netG.eval()
+        test_in = torch.randn(1, nz, 1, 1, device=device)
+        fake_results = netG(test_in).detach().cpu()
+        img = ToPILImage()(fake_results[0])
+
+        st.image(img, width=256, caption='generated movie poster')
+
+    # %%
+
+    # %%
     
-
-# %%
-if st.button('Click to generate poster'):
-    st.write('Generating poster....')
-    netG.eval()
-    test_in = torch.randn(1, nz, 1, 1, device=device)
-    fake_results = netG(test_in).detach().cpu()
-    img = ToPILImage()(fake_results[0])
-
-    st.image(img, width=256, caption='generated movie poster')
-
-# %%
-
-# %%
+if __name__ == '__main__':
+    main()
