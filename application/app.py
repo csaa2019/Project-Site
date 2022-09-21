@@ -28,7 +28,7 @@ def main():
 
     # %%
     netG = Generator(ngpu).to(device)
-    netG_params = torch.load("/application/model1.pth")
+    netG_params = torch.load("application/model1.pth")
     netG.load_state_dict(netG_params)
 
 
